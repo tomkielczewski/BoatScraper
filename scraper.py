@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 from urllib.request import urlopen
 import time
+import pandas as pd
 
 def download_pages(url1, url2, path1, path2):
         for i in range(1,15):
@@ -17,21 +18,50 @@ def download_pages(url1, url2, path1, path2):
             
             time.sleep(10)
 
-if __name__ == "__main__":
-
-    with open('clickandboat/clickandboat_example_page.html', 'r', encoding = 'utf-8') as file:
+#TODO:
+def verify_details(columns):
+    for column in columns:
+        pass
+    
+def scrap_data(offer_url):
+    dataframe = pd.DataFrame()
+    with open(offer_url, 'r', encoding = 'utf-8') as file:
 
         soup = BeautifulSoup(file, "html.parser")
-        a_elems = soup.find_all("div", {"class": "boatDetails__list"})
+        boatDetails = soup.find("div", {"class": "boatDetails__list"})
+        children = boatDetails.findChildren("div" , recursive=False)
+        for child in children:
+            # child.string
+            print(child.contents[0].strip().replace(':', ''))
+            span = child.find("span")
+            print(span.contents[0].strip())
+
+        localisation = soup.find(class_='map__text')
+        span = localisation.find("span")
+        print(span.contents[0].strip())
+
+        equipment = soup.find("div", {"class": "itemsList"})
+        children = equipment.find_all("div", {"class": "itemsList__text"})
+        equipment = ''
+        for child in children:
+            equipment = equipment + child.contents[0].strip() + ', '
+
+        print("wyposażenie: " + equipment)
+    return dataframe
+
+if __name__ == "__main__":
+    df = scrap_data('clickandboat_example_page.html')
+    
+
         # for a in a_elems:
         #     print(a['href'])
-        url = a_elems[0]['href']
-        page = urlopen(url)
-        html = page.read().decode("utf-8")
-        soup = BeautifulSoup(html, "html.parser")
-        file_name = "clickandboat_example_page.html"
-        with open(file_name, 'w', encoding = 'utf-8') as file:
-            file.write(str(soup))
+        # url = a_elems[0]['href']
+        # page = urlopen(url)
+        # html = page.read().decode("utf-8")
+        # soup = BeautifulSoup(html, "html.parser")
+        # file_name = "clickandboat_example_page.html"
+        # with open(file_name, 'w', encoding = 'utf-8') as file:
+        #     file.write(str(soup))
 
         
 

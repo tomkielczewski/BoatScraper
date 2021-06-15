@@ -24,34 +24,39 @@ def verify_details(columns):
         pass
     
 def scrap_data(offer_url):
-    dataframe = pd.DataFrame()
+    dataframe = pd.DataFrame(columns = ['Producent', 'Model', 'Rok', 'Pojemność', 'Liczba kabin', 'Liczba koi', 'Ilość kabin łazienkowych', 'Długość', 'Szerokość', 'Zanurzenie', 'Moc', 'Lokalizacja', 'Wyposażenie'])
+    row = {}
     with open(offer_url, 'r', encoding = 'utf-8') as file:
 
         soup = BeautifulSoup(file, "html.parser")
         boatDetails = soup.find("div", {"class": "boatDetails__list"})
         children = boatDetails.findChildren("div" , recursive=False)
         for child in children:
-            # child.string
-            print(child.contents[0].strip().replace(':', ''))
+            column_name = child.contents[0].strip().replace(':', '')
             span = child.find("span")
-            print(span.contents[0].strip())
+            value = span.contents[0].strip()
+            row[column_name] = value
 
         localisation = soup.find(class_='map__text')
         span = localisation.find("span")
-        print(span.contents[0].strip())
+        row['Lokalizacja'] = span.contents[0].strip()
 
         equipment = soup.find("div", {"class": "itemsList"})
         children = equipment.find_all("div", {"class": "itemsList__text"})
         equipment = ''
         for child in children:
             equipment = equipment + child.contents[0].strip() + ', '
+        row['Wyposażenie'] = equipment
 
-        print("wyposażenie: " + equipment)
+    dataframe = dataframe.append(row, ignore_index=True)
     return dataframe
+
+def scrap_offers():
+    pass
 
 if __name__ == "__main__":
     df = scrap_data('clickandboat_example_page.html')
-    
+    print(df)
 
         # for a in a_elems:
         #     print(a['href'])

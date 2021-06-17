@@ -15,8 +15,20 @@ def download_pages(url1, url2, path1, path2):
             file_name = path1 + str(i) + path2
             with open(file_name, 'w', encoding = 'utf-8') as file:
                 file.write(str(soup))
-            print()
+            print('Downloaded: ', file_name)
             time.sleep(10)
+
+def download_product(url, path):
+        url = url
+        page = urlopen(url)
+        html = page.read().decode("utf-8")
+        soup = BeautifulSoup(html, "html.parser")
+
+        file_name = path
+        with open(file_name, 'w', encoding = 'utf-8') as file:
+            file.write(str(soup))
+        print('Downloaded: ', file_name)
+        # time.sleep(10)
 
 #TODO:
 def verify_details(columns):
@@ -70,9 +82,15 @@ if __name__ == "__main__":
     for i in range(1, 15):
         # links = links + scrap_porduct_links('clickandboat/clickandboat_polska_zaglowe_' + i + '.html')
         links = scrap_porduct_links('clickandboat/clickandboat_polska_zaglowe_' + str(i) + '.html')
+        j = 0
         for link in links:
+            j += 1
+            product_path = 'clickandboat/products/product_' + str(i*10 + j - 10) + '.html'
+            # download_product(link, product_path)
+            # df = df.append(scrap_data(product_path))
             try:
-                df = df.append(scrap_data(link))
+                download_product(link, product_path)
+                df = df.append(scrap_data(product_path))
             except:
                 print('Error during scraping data from: ' + link)
             

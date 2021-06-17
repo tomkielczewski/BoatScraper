@@ -15,7 +15,7 @@ def download_pages(url1, url2, path1, path2):
             file_name = path1 + str(i) + path2
             with open(file_name, 'w', encoding = 'utf-8') as file:
                 file.write(str(soup))
-            
+            print()
             time.sleep(10)
 
 #TODO:
@@ -54,9 +54,33 @@ def scrap_data(offer_url):
 def scrap_offers():
     pass
 
+def scrap_porduct_links(url):
+    links = []
+    with open(url, 'r', encoding = 'utf-8') as file:
+        soup = BeautifulSoup(file, "html.parser")
+        a_elems = soup.find_all("a", {"class": "product-link"})
+        for a in a_elems:
+            links.append(a['href'])
+    return links
+
 if __name__ == "__main__":
-    df = scrap_data('clickandboat_example_page.html')
-    print(df)
+    
+    # print(scrap_porduct_links('clickandboat/clickandboat_polska_zaglowe_1.html'))
+    df = pd.DataFrame(columns = ['Producent', 'Model', 'Rok', 'Pojemność', 'Liczba kabin', 'Liczba koi', 'Ilość kabin łazienkowych', 'Długość', 'Szerokość', 'Zanurzenie', 'Moc', 'Lokalizacja', 'Wyposażenie'])
+    for i in range(1, 15):
+        # links = links + scrap_porduct_links('clickandboat/clickandboat_polska_zaglowe_' + i + '.html')
+        links = scrap_porduct_links('clickandboat/clickandboat_polska_zaglowe_' + str(i) + '.html')
+        for link in links:
+            try:
+                df = df.append(scrap_data(link))
+            except:
+                print('Error during scraping data from: ' + link)
+            
+    df.to_excel("CnBData.xlsx")  
+
+        # children = boatDetails.findChildren("div" , recursive=False)
+    # df = scrap_data('clickandboat_example_page.html')
+    # print(df)
 
         # for a in a_elems:
         #     print(a['href'])

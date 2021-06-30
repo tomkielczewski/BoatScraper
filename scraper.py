@@ -28,7 +28,7 @@ def download_product(url, path):
         with open(file_name, 'w', encoding = 'utf-8') as file:
             file.write(str(soup))
         print('Downloaded: ', file_name)
-        # time.sleep(10)
+        time.sleep(10)
 
 #TODO:
 def verify_details(columns):
